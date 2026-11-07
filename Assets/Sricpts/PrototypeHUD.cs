@@ -20,8 +20,8 @@ namespace LeagueTry
 
         private void Start()
         {
-            // EN: Check the Inspector references before updating the HUD.
-            // ES: Comprobamos las referencias antes de actualizar el HUD.
+            // EN: Check all Inspector references.
+            // ES: Comprobamos las referencias del Inspector.
             if (rounds == null ||
                 playerJump == null ||
                 player == null ||
@@ -46,8 +46,8 @@ namespace LeagueTry
 
         private void Update()
         {
-            // EN: Display the current score, round and available jumps.
-            // ES: Mostramos los tries, la ronda y los saltos disponibles.
+            // EN: Display score, round and remaining jumps.
+            // ES: Mostramos tries, ronda y saltos restantes.
             triesText.text = "TRIES  " + rounds.triesScored;
             roundText.text = "ROUND  " + rounds.currentRound;
 
@@ -55,8 +55,8 @@ namespace LeagueTry
                 "JUMPS  " + playerJump.jumpsRemaining +
                 " / " + playerJump.jumpsPerRound;
 
-            // EN: Display one movement state at a time.
-            // ES: Mostramos un estado de movimiento a la vez.
+            // EN: Display the movement state.
+            // ES: Mostramos el estado del movimiento.
             if (playerJump.isJumping)
             {
                 stateText.text = "AIRBORNE";
@@ -70,8 +70,8 @@ namespace LeagueTry
                 stateText.text = "READY";
             }
 
-            // EN: Show whether a shield is available to block a tackle.
-            // ES: Indicamos si queda un escudo para bloquear un tackle.
+            // EN: Show whether a shield charge is available.
+            // ES: Indicamos si hay una carga de escudo disponible.
             if (playerShield.hasShield)
             {
                 shieldText.text = "SHIELD  READY";
@@ -83,8 +83,8 @@ namespace LeagueTry
                 shieldText.color = Color.white;
             }
 
-            // EN: Read the boost timer without changing movement.
-            // ES: Consultamos el tiempo del boost sin cambiar el movimiento.
+            // EN: Display the remaining speed boost time.
+            // ES: Mostramos el tiempo restante del boost.
             float boostTime = player.GetSpeedBoostTimeRemaining();
 
             if (boostTime > 0f)
@@ -100,22 +100,33 @@ namespace LeagueTry
                 speedText.color = Color.white;
             }
 
-            // EN: Show a short scoring message or the current objective.
-            // ES: Mostramos un aviso de try o el objetivo actual.
-            if (Time.time - rounds.lastTryTime < 1.5f)
+            // EN: Show the latest result for 1.5 seconds.
+            // ES: Mostramos el último resultado durante 1.5 segundos.
+            if (Time.time - rounds.lastTackleTime < 1.5f &&
+                rounds.lastTackleTime >= rounds.lastTryTime)
+            {
+                messageText.text = "TACKLED! Try again";
+                messageText.color = Color.red;
+            }
+            else if (Time.time - rounds.lastTryTime < 1.5f)
             {
                 messageText.text = "TRY! Jumps restored";
+                messageText.color = Color.green;
             }
             else if (playerJump.jumpsRemaining == 0 &&
                      !playerJump.isJumping)
             {
                 messageText.text =
                     "No jumps left - run to the try zone";
+
+                messageText.color = Color.white;
             }
             else
             {
                 messageText.text =
                     "Reach the try zone to start the next round";
+
+                messageText.color = Color.white;
             }
         }
     }

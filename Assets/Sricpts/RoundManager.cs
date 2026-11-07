@@ -2,7 +2,6 @@ using UnityEngine;
 
 namespace LeagueTry
 {
-    
     public class RoundManager : MonoBehaviour
     {
         public PitchMovement player;
@@ -15,15 +14,18 @@ namespace LeagueTry
         [HideInInspector] public int triesScored;
         [HideInInspector] public int currentRound = 1;
         [HideInInspector] public float lastTryTime = -10f;
+        [HideInInspector] public float lastTackleTime = -10f;
 
         private bool tryRequested;
         private bool tackleRequested;
 
         private void Start()
         {
-            // ES: Comprobamos las referencias necesarias antes de empezar.
-            // EN: Check required references before starting.
-            if (player == null || playerJump == null || spawnPoint == null)
+            // EN: Check the required references.
+            // ES: Comprobamos las referencias necesarias.
+            if (player == null ||
+                playerJump == null ||
+                spawnPoint == null)
             {
                 Debug.LogError(
                     "Assign Player, Player Jump and Spawn Point in RoundManager.",
@@ -36,13 +38,16 @@ namespace LeagueTry
 
             triesScored = 0;
             currentRound = 1;
+            lastTryTime = -10f;
+            lastTackleTime = -10f;
+
             ResetPlayer();
         }
 
         public void RequestTry(PitchMovement enteringPlayer)
         {
-            // ES: Solo el jugador asignado puede anotar.
             // EN: Only the assigned player can score.
+            // ES: Solo el jugador asignado puede anotar.
             if (enabled && enteringPlayer == player)
             {
                 tryRequested = true;
@@ -51,18 +56,20 @@ namespace LeagueTry
 
         public void RequestTackle(PitchMovement enteringPlayer)
         {
-            // ES: Evitamos procesar varias peticiones del mismo contacto.
-            // EN: Avoid processing multiple requests from the same contact.
-            if (!enabled || enteringPlayer != player ||
-                tryRequested || tackleRequested)
+            // EN: Ignore invalid or duplicate requests.
+            // ES: Ignoramos solicitudes incorrectas o repetidas.
+            if (!enabled ||
+                enteringPlayer != player ||
+                tryRequested ||
+                tackleRequested)
             {
                 return;
             }
 
+            // EN: A shield can block the tackle.
+            // ES: El escudo puede bloquear el tackle.
             PlayerShield shield = player.GetComponent<PlayerShield>();
 
-            // ES: Si el escudo bloquea el golpe, no reiniciamos el intento.
-            // EN: If the shield blocks the hit, do not restart the attempt.
             if (shield != null && shield.TryBlockTackle())
             {
                 return;
@@ -73,12 +80,10 @@ namespace LeagueTry
 
         private void LateUpdate()
         {
-            // ES: Procesamos los reinicios después de los avisos de física.
-            // EN: Process resets after physics notifications.
+            // EN: Process results outside the physics callbacks.
+            // ES: Procesamos los resultados fuera de los eventos de física.
             if (tryRequested)
             {
-                // ES: Si coinciden un try y un tackle, el try tiene prioridad.
-                // EN: If a try and tackle coincide, the try takes priority.
                 tryRequested = false;
                 tackleRequested = false;
 
@@ -90,22 +95,25 @@ namespace LeagueTry
             }
             else if (tackleRequested)
             {
-                // ES: El tackle no aumenta los tries ni la ronda.
-                // EN: A tackle does not increase tries or the round.
                 tackleRequested = false;
+
+                // EN: Record the tackle time for the HUD.
+                // ES: Guardamos el momento del tackle para el HUD.
+                lastTackleTime = Time.time;
+
                 ResetPlayer();
             }
         }
 
         private void ResetPlayer()
         {
-            // ES: ResetPosition también cancela el aumento de velocidad.
-            // EN: ResetPosition also cancels the speed boost.
+            // EN: Restore the position and jumps.
+            // ES: Restauramos la posición y los saltos.
+            // ResetPosition also clears the speed boost.
+            // ResetPosition también elimina el boost de velocidad.
             player.ResetPosition(spawnPoint.position);
             playerJump.ResetJumps();
 
-            // ES: El jugador comienza el nuevo intento sin escudo.
-            // EN: The player starts the new attempt without a shield.
             PlayerShield shield = player.GetComponent<PlayerShield>();
 
             if (shield != null)
@@ -113,8 +121,8 @@ namespace LeagueTry
                 shield.ResetShield();
             }
 
-            // ES: Los dos objetos vuelven a estar disponibles.
-            // EN: Both pickups become available again.
+            // EN: Make the pickups available again.
+            // ES: Hacemos que los pickups vuelvan a estar disponibles.
             if (shieldPickup != null)
             {
                 shieldPickup.SetActive(true);
