@@ -7,12 +7,12 @@ namespace LeagueTry
     [RequireComponent(typeof(Camera))]
     public class FieldCamara : MonoBehaviour
     {
-        // ES: Tamaño de la cámara en la escena 2D original.
-        // EN: Camera size in the original 2D scene.
+        // This Camera size in the original 2D scene.// Tamaño de la cámara en la escena 2D original.
+        
         public float camaraSize = 6.4f;
 
-        // ES: En la escena 3D, arrastra Player a Target.
-        // EN: In the 3D scene, drag Player into Target.
+        // In the 3D scene, drag Player into Target.// En la escena 3D, arrastra Player a Target.
+       
         public Transform target;
         public Vector3 offset = new Vector3(0f, 6f, -9f);
 
@@ -29,16 +29,15 @@ namespace LeagueTry
 
             if (target != null)
             {
-                // ES: En 3D usamos perspectiva y toda la ventana.
-                // EN: In 3D, use perspective and the full viewport.
+                // In the 3D, use perspective and the full viewport.// En 3D usamos perspectiva y toda la ventana.
+             
                 view.orthographic = false;
                 view.rect = new Rect(0f, 0f, 1f, 1f);
                 view.ResetAspect();
 
-                // ES: Seguimos a Player, no a Visual, para que la cámara
-                // permanezca estable cuando el personaje salta.
-                // EN: Follow Player, not Visual, so the camera stays
-                // steady when the character jumps.
+                // Seguimos a Player, no a Visual, para que la cámara permanezca estable cuando el personaje salta.//Follow Player, not Visual, so the camera stay steady when the character jumps.
+               
+                
                 transform.position = target.position + offset;
 
                 Vector3 lookPoint = target.position + new Vector3(0f, 1f, 5f);
@@ -46,8 +45,8 @@ namespace LeagueTry
                 return;
             }
 
-            // ES: Sin Target, conservamos el encuadre 16:9 de Project 1.
-            // EN: Without a target, keep the 16:9 framing from Project 1.
+            // Without a target, keep the 16:9 framing from Project 1.// Sin Target, conservamos el encuadre 16:9 de Project 1.
+            
             if (Screen.width == 0 || Screen.height == 0) return;
 
             float targetAspect = 16f / 9f;

@@ -2,8 +2,7 @@ using UnityEngine;
 
 namespace LeagueTry
 {
-    // ES: Creado con ayuda de ChatGPT para recoger velocidad temporal.
-    // EN: Created with ChatGPT assistance to collect a temporary speed boost.
+    
     public class SpeedPickup : MonoBehaviour
     {
         public float multiplier = 1.5f;
@@ -19,8 +18,8 @@ namespace LeagueTry
                 return;
             }
 
-            // ES: El jugador controla la duración aunque el pickup se desactive.
-            // EN: The player manages duration even when the pickup is disabled.
+            // The player manages duration even when the pickup is disabled.// El jugador controla la duración aunque el pickup se desactive.
+            
             player.ActivateSpeedBoost(multiplier, duration);
             gameObject.SetActive(false);
         }

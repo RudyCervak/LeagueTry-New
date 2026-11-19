@@ -23,8 +23,8 @@ namespace LeagueTry
         {
             body = GetComponent<Rigidbody>();
 
-            // ES: El script controla el movimiento sin gravedad.
-            // EN: The script controls movement without gravity.
+            // The script controls movement without gravity.// El script controla el movimiento sin gravedad.
+            
             body.useGravity = false;
             body.isKinematic = true;
         }
@@ -36,8 +36,8 @@ namespace LeagueTry
                 return;
             }
 
-            // ES: Aumentamos la velocidad por ronda hasta un máximo.
-            // EN: Increase speed each round up to a maximum.
+            // Increase speed each round up to a maximum.// Aumentamos la velocidad por ronda hasta un máximo.
+           
             float speed = startingSpeed
                 + (rounds.currentRound - 1) * speedPerRound;
 
@@ -45,8 +45,8 @@ namespace LeagueTry
 
             Vector3 nextPosition = body.position;
 
-            // ES: Recorremos el campo lateralmente sin cambiar Y ni Z.
-            // EN: Move across the field without changing Y or Z.
+            // Move across the field without changing Y or Z.// Recorremos el campo lateralmente sin cambiar Y ni Z.
+            
             if (movingRight)
             {
                 nextPosition.x += speed * Time.fixedDeltaTime;
@@ -56,8 +56,8 @@ namespace LeagueTry
                 nextPosition.x -= speed * Time.fixedDeltaTime;
             }
 
-            // ES: Cambiamos de dirección al alcanzar los límites.
-            // EN: Reverse direction when reaching the limits.
+            // Reverse direction when reaching the limits.// Cambiamos de dirección al alcanzar los límites.
+            
             if (nextPosition.x >= maximumX)
             {
                 nextPosition.x = maximumX;
@@ -79,8 +79,8 @@ namespace LeagueTry
 
         private void OnTriggerStay(Collider other)
         {
-            // ES: También comprobamos si aterriza junto al defensor.
-            // EN: Also check whether the player lands against the defender.
+            // Also check whether the player lands against the defender.// También comprobamos si aterriza junto al defensor.
+            
             CheckTackle(other);
         }
 
@@ -96,15 +96,15 @@ namespace LeagueTry
 
             PlayerJump jump = player.GetComponent<PlayerJump>();
 
-            // ES: Saltar con suficiente altura evita el tackle.
-            // EN: Jumping high enough avoids the tackle.
+            // Jumping high enough avoids the tackle.// ES: Saltar con suficiente altura evita el tackle.
+            
             if (jump != null && jump.GetJumpHeight() >= safeJumpHeight)
             {
                 return;
             }
 
-            // ES: El manager comprueba el escudo antes de reiniciar.
-            // EN: The manager checks the shield before resetting.
+            //The manager checks the shield before resetting.// El manager comprueba el escudo antes de reiniciar.
+            
             rounds.RequestTackle(player);
         }
     }

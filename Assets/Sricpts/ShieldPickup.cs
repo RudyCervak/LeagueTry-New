@@ -2,8 +2,7 @@ using UnityEngine;
 
 namespace LeagueTry
 {
-    // ES: Creado con ayuda de ChatGPT para recoger el escudo.
-    // EN: Created with ChatGPT assistance to collect the shield.
+    
     public class ShieldPickup : MonoBehaviour
     {
         private void OnTriggerEnter(Collider other)
@@ -18,8 +17,8 @@ namespace LeagueTry
 
             shield.CollectShield();
 
-            // ES: Ocultamos el objeto para impedir recogerlo repetidamente.
-            // EN: Hide the object to prevent repeated collection.
+            // Hide the object to prevent repeated collection.// Ocultamos el objeto para impedir recogerlo repetidamente.
+            
             gameObject.SetActive(false);
         }
     }

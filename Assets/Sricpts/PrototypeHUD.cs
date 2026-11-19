@@ -20,8 +20,8 @@ namespace LeagueTry
 
         private void Start()
         {
-            // EN: Check all Inspector references.
-            // ES: Comprobamos las referencias del Inspector.
+            // Check all Inspector references. // Comprobamos las referencias del Inspector.
+            
             if (rounds == null ||
                 playerJump == null ||
                 player == null ||
@@ -46,8 +46,8 @@ namespace LeagueTry
 
         private void Update()
         {
-            // EN: Display score, round and remaining jumps.
-            // ES: Mostramos tries, ronda y saltos restantes.
+            // Display score, round and remaining jumps.// Mostramos tries, ronda y saltos restantes.
+           
             triesText.text = "TRIES  " + rounds.triesScored;
             roundText.text = "ROUND  " + rounds.currentRound;
 
@@ -55,8 +55,8 @@ namespace LeagueTry
                 "JUMPS  " + playerJump.jumpsRemaining +
                 " / " + playerJump.jumpsPerRound;
 
-            // EN: Display the movement state.
-            // ES: Mostramos el estado del movimiento.
+            // Display the movement state.// Mostramos el estado del movimiento.
+            
             if (playerJump.isJumping)
             {
                 stateText.text = "AIRBORNE";
@@ -70,8 +70,8 @@ namespace LeagueTry
                 stateText.text = "READY";
             }
 
-            // EN: Show whether a shield charge is available.
-            // ES: Indicamos si hay una carga de escudo disponible.
+            //  Show whether a shield charge is available.// Indicamos si hay una carga de escudo disponible.
+            
             if (playerShield.hasShield)
             {
                 shieldText.text = "SHIELD  READY";
@@ -83,8 +83,8 @@ namespace LeagueTry
                 shieldText.color = Color.white;
             }
 
-            // EN: Display the remaining speed boost time.
-            // ES: Mostramos el tiempo restante del boost.
+            // Display the remaining speed boost time.// Mostramos el tiempo restante del boost.
+            
             float boostTime = player.GetSpeedBoostTimeRemaining();
 
             if (boostTime > 0f)
@@ -100,8 +100,8 @@ namespace LeagueTry
                 speedText.color = Color.white;
             }
 
-            // EN: Show the latest result for 1.5 seconds.
-            // ES: Mostramos el último resultado durante 1.5 segundos.
+            // Show the latest result for 1.5 seconds.// Mostramos el último resultado durante 1.5 segundos.
+            
             if (Time.time - rounds.lastTackleTime < 1.5f &&
                 rounds.lastTackleTime >= rounds.lastTryTime)
             {

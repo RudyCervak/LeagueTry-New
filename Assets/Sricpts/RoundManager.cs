@@ -21,8 +21,8 @@ namespace LeagueTry
 
         private void Start()
         {
-            // EN: Check the required references.
-            // ES: Comprobamos las referencias necesarias.
+            // Check the required references.// Comprobamos las referencias necesarias.
+            
             if (player == null ||
                 playerJump == null ||
                 spawnPoint == null)
@@ -46,8 +46,8 @@ namespace LeagueTry
 
         public void RequestTry(PitchMovement enteringPlayer)
         {
-            // EN: Only the assigned player can score.
-            // ES: Solo el jugador asignado puede anotar.
+            // Only the assigned player can score.// Solo el jugador asignado puede anotar.
+           
             if (enabled && enteringPlayer == player)
             {
                 tryRequested = true;
@@ -56,8 +56,8 @@ namespace LeagueTry
 
         public void RequestTackle(PitchMovement enteringPlayer)
         {
-            // EN: Ignore invalid or duplicate requests.
-            // ES: Ignoramos solicitudes incorrectas o repetidas.
+            // Ignore invalid or duplicate requests.// Ignoramos solicitudes incorrectas o repetidas.
+            
             if (!enabled ||
                 enteringPlayer != player ||
                 tryRequested ||
@@ -66,8 +66,8 @@ namespace LeagueTry
                 return;
             }
 
-            // EN: A shield can block the tackle.
-            // ES: El escudo puede bloquear el tackle.
+            // A shield can block the tackle.// El escudo puede bloquear el tackle.
+            
             PlayerShield shield = player.GetComponent<PlayerShield>();
 
             if (shield != null && shield.TryBlockTackle())
@@ -80,8 +80,8 @@ namespace LeagueTry
 
         private void LateUpdate()
         {
-            // EN: Process results outside the physics callbacks.
-            // ES: Procesamos los resultados fuera de los eventos de física.
+            // Process results outside the physics callbacks.// Procesamos los resultados fuera de los eventos de física.
+           
             if (tryRequested)
             {
                 tryRequested = false;
@@ -97,8 +97,8 @@ namespace LeagueTry
             {
                 tackleRequested = false;
 
-                // EN: Record the tackle time for the HUD.
-                // ES: Guardamos el momento del tackle para el HUD.
+                // Record the tackle time for the HUD. // Guardamos el momento del tackle para el HUD.
+                
                 lastTackleTime = Time.time;
 
                 ResetPlayer();
@@ -107,10 +107,10 @@ namespace LeagueTry
 
         private void ResetPlayer()
         {
-            // EN: Restore the position and jumps.
-            // ES: Restauramos la posición y los saltos.
-            // ResetPosition also clears the speed boost.
-            // ResetPosition también elimina el boost de velocidad.
+            // EN: Restore the position and jumps.// Restauramos la posición y los saltos.
+
+            // ResetPosition also clears the speed boost.// ResetPosition también elimina el boost de velocidad.
+            
             player.ResetPosition(spawnPoint.position);
             playerJump.ResetJumps();
 
@@ -121,8 +121,8 @@ namespace LeagueTry
                 shield.ResetShield();
             }
 
-            // EN: Make the pickups available again.
-            // ES: Hacemos que los pickups vuelvan a estar disponibles.
+            //  Make the pickups available again.// Hacemos que los pickups vuelvan a estar disponibles.
+            
             if (shieldPickup != null)
             {
                 shieldPickup.SetActive(true);

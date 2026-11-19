@@ -20,10 +20,10 @@ namespace LeagueTry
 
         private void Awake()
         {
-            // ES: Visual debe ser un hijo del jugador para separar el salto
-            // del movimiento por el campo y dejar la sombra en el suelo.
-            // EN: Visual must be a child of the player to separate jumping
-            // from field movement and keep the shadow on the ground.
+            // EN: Visual must be a child of the player to separate jumping from field movement and keep the shadow on the ground.// ES: Visual debe ser un hijo del jugador para separar el salto  del movimiento por el campo y dejar la sombra en el suelo.
+
+             
+
             if (visual == null || visual == transform ||
                 !visual.IsChildOf(transform))
             {
@@ -46,8 +46,8 @@ namespace LeagueTry
 
             if (keyboard != null && Application.isFocused)
             {
-                // ES: Detectamos una pulsación, no una tecla mantenida.
-                // EN: Detect a single press, not a held key.
+                // Detect a single press, not a held key.// Detectamos una pulsación, no una tecla mantenida.
+                
                 if (keyboard.spaceKey.wasPressedThisFrame)
                 {
                     TryJump();
@@ -56,8 +56,8 @@ namespace LeagueTry
 
             if (isJumping)
             {
-                // ES: La velocidad eleva al personaje y la gravedad lo frena.
-                // EN: Velocity raises the character and gravity slows it down.
+                // Velocity raises the character and gravity slows it down.// La velocidad eleva al personaje y la gravedad lo frena.
+                
                 float time = Time.deltaTime;
                 float upwardMovement = verticalSpeed * time;
                 float gravityDrop = 0.5f * gravity * time * time;
@@ -65,8 +65,8 @@ namespace LeagueTry
                 height += upwardMovement - gravityDrop;
                 verticalSpeed -= gravity * time;
 
-                // ES: Aterrizar permite otro salto, pero no recupera usos.
-                // EN: Landing allows another jump but does not restore uses.
+                // Landing allows another jump but does not restore uses.// Aterrizar permite otro salto, pero no recupera usos.
+                
                 if (height <= 0f)
                 {
                     height = 0f;
@@ -81,8 +81,8 @@ namespace LeagueTry
 
         public void TryJump()
         {
-            // ES: Hay que estar en el suelo y tener un salto disponible.
-            // EN: The player must be grounded and have a jump available.
+            // The player must be grounded and have a jump available.// Hay que estar en el suelo y tener un salto disponible.
+            
             if (!enabled || isJumping || jumpsRemaining <= 0)
             {
                 return;
@@ -96,23 +96,23 @@ namespace LeagueTry
 
         public float GetJumpHeight()
         {
-            // ES: El defensor puede consultar la altura sin modificarla.
-            // EN: The defender can read the jump height without changing it.
+            // The defender can read the jump height without changing it.// El defensor puede consultar la altura sin modificarla.
+            
             return height;
         }
 
         public void ResetJumps()
         {
-            // ES: Evitamos reiniciar si la referencia Visual es incorrecta.
-            // EN: Avoid resetting if the Visual reference is invalid.
+            // EN: Avoid resetting if the Visual reference is invalid.// ES: Evitamos reiniciar si la referencia Visual es incorrecta.
+            
             if (visual == null || visual == transform ||
                 !visual.IsChildOf(transform))
             {
                 return;
             }
 
-            // ES: Recuperamos los saltos y cancelamos cualquier salto activo.
-            // EN: Restore jumps and cancel any active jump.
+            // Restore jumps and cancel any active jump.// Recuperamos los saltos y cancelamos cualquier salto activo.
+            
             jumpsRemaining = jumpsPerRound;
             isJumping = false;
             height = 0f;
