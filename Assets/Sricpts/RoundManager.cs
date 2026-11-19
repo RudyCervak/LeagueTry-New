@@ -15,6 +15,9 @@ namespace LeagueTry
 
         public PickupRandomizer pickupRandomizer;
         public DefenderSpawner defenderSpawner;
+        public ConversionKick conversionKick;
+
+        [Min(1)] public int triesPerConversion = 5;
 
         public int startingLives = 5;
         public string mainMenuScene = "MainMenu";
@@ -28,7 +31,9 @@ namespace LeagueTry
         [HideInInspector] public int currentRound = 1;
         [HideInInspector] public int livesRemaining;
         [HideInInspector] public int personalBest;
+
         [HideInInspector] public bool isGameOver;
+        [HideInInspector] public bool isConversionActive;
 
         [HideInInspector] public float lastTryTime = -10f;
         [HideInInspector] public float lastTackleTime = -10f;
@@ -37,7 +42,11 @@ namespace LeagueTry
         private bool tackleRequested;
         private bool newRecordAchieved;
 
-        private const string recordKey = "LeagueTry_PersonalBest";
+        private bool conversionResultRequested;
+        private bool conversionWasSuccessful;
+
+        private const string recordKey =
+            "LeagueTry_PersonalBest";
 
         private void Start()
         {
@@ -70,9 +79,14 @@ namespace LeagueTry
             lastTackleTime = -10f;
 
             isGameOver = false;
+            isConversionActive = false;
+
             tryRequested = false;
             tackleRequested = false;
             newRecordAchieved = false;
+
+            conversionResultRequested = false;
+            conversionWasSuccessful = false;
 
             // Load the record saved on this device.// Cargamos el récord guardado en este dispositivo.
 
@@ -91,7 +105,10 @@ namespace LeagueTry
         {
             // Only the assigned player can score.// Solo el jugador asignado puede anotar.
 
-            if (enabled && !isGameOver && enteringPlayer == player)
+            if (enabled &&
+                !isGameOver &&
+                !isConversionActive &&
+                enteringPlayer == player)
             {
                 tryRequested = true;
             }
@@ -103,6 +120,7 @@ namespace LeagueTry
 
             if (!enabled ||
                 isGameOver ||
+                isConversionActive ||
                 enteringPlayer != player ||
                 tryRequested ||
                 tackleRequested)
@@ -112,7 +130,8 @@ namespace LeagueTry
 
             // A shield can block the tackle.// El escudo puede bloquear el tackle.
 
-            PlayerShield shield = player.GetComponent<PlayerShield>();
+            PlayerShield shield =
+                player.GetComponent<PlayerShield>();
 
             if (shield != null && shield.TryBlockTackle())
             {
@@ -131,6 +150,23 @@ namespace LeagueTry
                 return;
             }
 
+            // Finish the kick after input processing to avoid an accidental jump.// Terminamos la patada después de procesar el input para evitar un salto accidental.
+
+            if (isConversionActive)
+            {
+                if (conversionResultRequested)
+                {
+                    FinishConversion(conversionWasSuccessful);
+                }
+                else if (conversionKick == null ||
+                         !conversionKick.IsRunning)
+                {
+                    FinishConversion(false);
+                }
+
+                return;
+            }
+
             // Process results outside the physics callbacks.// Procesamos los resultados fuera de los eventos de física.
 
             if (tryRequested)
@@ -140,11 +176,22 @@ namespace LeagueTry
 
                 triesScored += 1;
                 currentRound += 1;
+
                 lastTryTime = Time.time;
 
                 SavePersonalBest();
-                ResetPlayer();
                 UpdateLivesAndRecord();
+
+                // Offer one conversion after every five tries by default.// Ofrecemos una conversión cada cinco tries de forma predeterminada.
+
+                if (triesScored %
+                    Mathf.Max(1, triesPerConversion) == 0 &&
+                    TryBeginConversion())
+                {
+                    return;
+                }
+
+                ResetPlayer();
             }
             else if (tackleRequested)
             {
@@ -156,7 +203,10 @@ namespace LeagueTry
 
                 // An unblocked tackle removes one life.// Un tackle sin bloquear quita una vida.
 
-                livesRemaining = Mathf.Max(0, livesRemaining - 1);
+                livesRemaining = Mathf.Max(
+                    0,
+                    livesRemaining - 1
+                );
 
                 UpdateLivesAndRecord();
 
@@ -169,6 +219,93 @@ namespace LeagueTry
                     ResetPlayer();
                 }
             }
+        }
+
+        private bool TryBeginConversion()
+        {
+            if (conversionKick == null)
+            {
+                Debug.LogWarning(
+                    "Assign Conversion Kick in RoundManager.",
+                    this
+                );
+
+                return false;
+            }
+
+            isConversionActive = true;
+
+            conversionResultRequested = false;
+            conversionWasSuccessful = false;
+
+            // Disable movement and jumping during the conversion.// Desactivamos el movimiento y el salto durante la conversión.
+
+            player.enabled = false;
+            playerJump.enabled = false;
+
+            if (conversionKick.BeginKick(this))
+            {
+                return true;
+            }
+
+            // Continue normal play if the conversion has not been configured.// Continuamos la partida normal si la conversión no está configurada.
+
+            isConversionActive = false;
+
+            player.enabled = true;
+            playerJump.enabled = true;
+
+            return false;
+        }
+
+        public void RequestConversionResult(bool success)
+        {
+            // Accept only one result for the active conversion.// Aceptamos un solo resultado para la conversión activa.
+
+            if (!isConversionActive ||
+                isGameOver ||
+                conversionResultRequested)
+            {
+                return;
+            }
+
+            conversionWasSuccessful = success;
+            conversionResultRequested = true;
+        }
+
+        private void FinishConversion(bool success)
+        {
+            if (conversionKick != null)
+            {
+                conversionKick.CancelKick();
+            }
+
+            isConversionActive = false;
+            conversionResultRequested = false;
+
+            tryRequested = false;
+            tackleRequested = false;
+
+            // A successful kick restores one life up to the starting maximum.// Una patada acertada recupera una vida hasta el máximo inicial.
+
+            if (success)
+            {
+                livesRemaining = Mathf.Min(
+                    startingLives,
+                    livesRemaining + 1
+                );
+            }
+
+            // Missing the kick does not remove a life.// Fallar la patada no quita una vida.
+
+            Time.timeScale = 1f;
+
+            ResetPlayer();
+
+            player.enabled = true;
+            playerJump.enabled = true;
+
+            UpdateLivesAndRecord();
         }
 
         private void SavePersonalBest()
@@ -194,7 +331,10 @@ namespace LeagueTry
             if (livesText != null)
             {
                 livesText.text =
-                    "LIVES: " + livesRemaining + "/" + startingLives;
+                    "LIVES: " +
+                    livesRemaining +
+                    "/" +
+                    startingLives;
             }
 
             if (recordText != null)
@@ -208,6 +348,7 @@ namespace LeagueTry
             // End the game once all lives are lost.// Terminamos la partida cuando se pierden todas las vidas.
 
             isGameOver = true;
+
             tryRequested = false;
             tackleRequested = false;
 
@@ -229,7 +370,8 @@ namespace LeagueTry
 
                 if (newRecordAchieved)
                 {
-                    gameOverText.text += "\n\nNEW PERSONAL BEST!";
+                    gameOverText.text +=
+                        "\n\nNEW PERSONAL BEST!";
                 }
             }
 
@@ -239,9 +381,22 @@ namespace LeagueTry
             }
         }
 
+        private void LeaveConversion()
+        {
+            isConversionActive = false;
+            conversionResultRequested = false;
+
+            if (conversionKick != null)
+            {
+                conversionKick.CancelKick();
+            }
+        }
+
         public void RestartGame()
         {
             // Reload the current scene to start a fresh game.// Recargamos la escena actual para comenzar una partida nueva.
+
+            LeaveConversion();
 
             Time.timeScale = 1f;
 
@@ -253,6 +408,8 @@ namespace LeagueTry
         public void ReturnToMenu()
         {
             // Restore normal time before opening the main menu.// Restauramos el tiempo normal antes de abrir el menú principal.
+
+            LeaveConversion();
 
             Time.timeScale = 1f;
 
@@ -268,7 +425,8 @@ namespace LeagueTry
             player.ResetPosition(spawnPoint.position);
             playerJump.ResetJumps();
 
-            PlayerShield shield = player.GetComponent<PlayerShield>();
+            PlayerShield shield =
+                player.GetComponent<PlayerShield>();
 
             if (shield != null)
             {
